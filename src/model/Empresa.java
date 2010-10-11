@@ -6,7 +6,14 @@ public class Empresa {
 	private String name;
 	private String twitterAccount;
 	private String facebookPage;
+	private Data data;
 	
+	public Data getData() {
+		return data;
+	}
+	public void setData(Data data) {
+		this.data = data;
+	}
 	public Empresa(String name, String twitterAccount, String facebookPage,
 			List<String> outrosNomes) {
 		super();

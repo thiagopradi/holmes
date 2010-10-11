@@ -1,10 +1,16 @@
-package model;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
+
+import winterwell.jtwitter.Twitter;
+import winterwell.jtwitter.Twitter.Status;
+
+import model.Data;
+import model.Empresa;
 
 import jomp.runtime.OMP;
 import com.restfb.DefaultFacebookClient;
@@ -58,14 +64,30 @@ public class MainClass {
 		
 		FacebookClient facebookClient = new DefaultFacebookClient(props.getProperty("facebook_key"));
 		FacebookClient publicOnlyFacebookClient = new DefaultFacebookClient();
-		
-		//omp parallel 
+		Twitter twClient = new Twitter();
+		int myid;
+
+		//omp parallel private(myid)
 		{
-			//omp for
-			for(int i = 0; i < arr.size(); i++) {
-				Page page = facebookClient.fetchObject(((Empresa) arr.get(i)).getFacebookPage(), Page.class);
-				System.out.println(page.getName());
-			}
+			myid = OMP.getThreadNum();
+			Empresa e1 = (Empresa) arr.get(myid);
+			Data d = new Data(e1);
+			e1.setData(d);
+			Page page = facebookClient.fetchObject(e1.getFacebookPage(), Page.class);
+			List list = twClient.search(e1.getTwitterAccount());
+			d.setTwitterList(list);
+			d.setFacebookPage(page);	
 		}
+		
+		Iterator it = arr.iterator();  
+		while (it.hasNext()) {
+			Empresa e2 = (Empresa) it.next();
+			e2.getData().processarTwitter();
+			e2.getData().processarFacebook();
+			System.out.println(e2.getData().getGoodPoints());
+			System.out.println(e2.getData().getBadPoints());
+		}  
+		
+		
 	}	
 }

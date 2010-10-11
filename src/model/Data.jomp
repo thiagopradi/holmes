@@ -1,0 +1,106 @@
+package model;
+
+import java.util.Iterator;
+import java.util.List;
+
+import winterwell.jtwitter.Twitter.Status;
+
+import jomp.runtime.OMP;
+
+import com.restfb.types.Page;
+
+public class Data {
+	private Empresa empresa;
+	private int goodPoints;
+	private int badPoints;
+	private List twitterList;
+	private Page facebookPage;
+
+	public Data(Empresa e1) {
+		this.empresa = e1;
+	}
+
+
+	public List getTwitterList() {
+		return twitterList;
+	}
+
+
+	public void setTwitterList(List twitterList) {
+		this.twitterList = twitterList;
+	}
+
+
+	public Page getFacebookPage() {
+		return facebookPage;
+	}
+
+
+	public void setFacebookPage(Page facebookPage) {
+		this.facebookPage = facebookPage;
+	}
+
+
+	public Empresa getEmpresa() {
+		return empresa;
+	}
+
+
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
+	}
+
+
+	public int getGoodPoints() {
+		return goodPoints;
+	}
+
+
+	public void setGoodPoints(int goodPoints) {
+		this.goodPoints = goodPoints;
+	}
+
+
+	public int getBadPoints() {
+		return badPoints;
+	}
+
+
+	public void setBadPoints(int badPoints) {
+		this.badPoints = badPoints;
+	}
+
+
+	public void processarTwitter() {
+		int myid;
+		int good = 0;
+		int bad = 0;
+
+
+
+		//omp parallel
+		{	
+			//omp for
+			for(int i = 0; i < this.twitterList.size(); i++) {
+				Status st = (Status) this.twitterList.get(i);
+				System.out.println(st.getText());
+
+				if(st.getText().contains("#fail")) {
+					bad++;
+				}
+
+				if(st.getText().contains("#win")){
+					good++;
+				}
+			}
+		}
+
+		this.goodPoints = good;
+		this.badPoints = bad;
+	}
+
+	public void processarFacebook() {
+
+	}
+
+}
