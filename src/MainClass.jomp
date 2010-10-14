@@ -13,10 +13,14 @@ import model.Data;
 import model.Empresa;
 
 import jomp.runtime.OMP;
+
+import com.restfb.Connection;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.FacebookException;
+import com.restfb.Parameter;
 import com.restfb.types.Page;
+import com.restfb.types.Post;
 
 
 public class MainClass {
@@ -74,9 +78,11 @@ public class MainClass {
 			Data d = new Data(e1);
 			e1.setData(d);
 			Page page = facebookClient.fetchObject(e1.getFacebookPage(), Page.class);
+			Connection publicSearch = facebookClient.fetchConnection("search", Post.class, Parameter.with("q", page.getName()), Parameter.with("type", "post"));
 			List list = twClient.search(e1.getTwitterAccount());
 			d.setTwitterList(list);
 			d.setFacebookPage(page);	
+			d.setFacebookSearch(publicSearch);
 		}
 		
 		Iterator it = arr.iterator();  
@@ -84,8 +90,10 @@ public class MainClass {
 			Empresa e2 = (Empresa) it.next();
 			e2.getData().processarTwitter();
 			e2.getData().processarFacebook();
-			System.out.println(e2.getData().getGoodPoints());
-			System.out.println(e2.getData().getBadPoints());
+			System.out.println(e2.getData().getFacebookBadPoints());
+			System.out.println(e2.getData().getFacebookGoodPoints());
+			System.out.println(e2.getData().getTwitterBadPoints());
+			System.out.println(e2.getData().getTwitterGoodPoints());
 		}  
 		
 		
