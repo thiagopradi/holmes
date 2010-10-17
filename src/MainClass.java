@@ -13,10 +13,14 @@ import model.Data;
 import model.Empresa;
 
 import jomp.runtime.OMP;
+
+import com.restfb.Connection;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.FacebookException;
+import com.restfb.Parameter;
 import com.restfb.types.Page;
+import com.restfb.types.Post;
 
 
 public class MainClass {
@@ -108,16 +112,21 @@ __omp_Object0.ex = ex;
 // OMP PARALLEL BLOCK ENDS
 
 		
+		
+		
+		
 		Iterator it = arr.iterator();  
 		while (it.hasNext()) {
 			Empresa e2 = (Empresa) it.next();
 			e2.getData().processarTwitter();
 			e2.getData().processarFacebook();
-			System.out.println(e2.getData().getGoodPoints());
-			System.out.println(e2.getData().getBadPoints());
+			
+			System.out.println("Empresa: " + e2.getName());
+			System.out.println("Pontos bons no facebook: " + e2.getData().getFacebookGoodPoints());
+			System.out.println("Pontos bons no twitter: " + e2.getData().getTwitterGoodPoints());
+			System.out.println("Pontos ruims no facebook: " + e2.getData().getFacebookBadPoints());
+			System.out.println("Pontos ruims no twitter: " + e2.getData().getTwitterBadPoints());
 		}  
-		
-		
 	}
 
 // OMP PARALLEL REGION INNER CLASS DEFINITION BEGINS
@@ -150,9 +159,11 @@ private static class __omp_Class0 extends jomp.runtime.BusyTask {
 			Data d = new Data(e1);
 			e1.setData(d);
 			Page page = facebookClient.fetchObject(e1.getFacebookPage(), Page.class);
+			Connection publicSearch = facebookClient.fetchConnection("search", Post.class, Parameter.with("q", page.getName()), Parameter.with("type", "post"));
 			List list = twClient.search(e1.getTwitterAccount());
 			d.setTwitterList(list);
 			d.setFacebookPage(page);	
+			d.setFacebookSearch(publicSearch);
 		}
     // OMP USER CODE ENDS
   // call reducer

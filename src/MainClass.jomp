@@ -85,17 +85,20 @@ public class MainClass {
 			d.setFacebookSearch(publicSearch);
 		}
 		
+		
+		
+		
 		Iterator it = arr.iterator();  
 		while (it.hasNext()) {
 			Empresa e2 = (Empresa) it.next();
 			e2.getData().processarTwitter();
 			e2.getData().processarFacebook();
-			System.out.println(e2.getData().getFacebookBadPoints());
-			System.out.println(e2.getData().getFacebookGoodPoints());
-			System.out.println(e2.getData().getTwitterBadPoints());
-			System.out.println(e2.getData().getTwitterGoodPoints());
+			
+			System.out.println("Empresa: " + e2.getName());
+			System.out.println("Pontos bons no facebook: " + e2.getData().getFacebookGoodPoints());
+			System.out.println("Pontos bons no twitter: " + e2.getData().getTwitterGoodPoints());
+			System.out.println("Pontos ruims no facebook: " + e2.getData().getFacebookBadPoints());
+			System.out.println("Pontos ruims no twitter: " + e2.getData().getTwitterBadPoints());
 		}  
-		
-		
 	}	
 }

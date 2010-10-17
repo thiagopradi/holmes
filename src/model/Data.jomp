@@ -5,11 +5,7 @@ import java.util.List;
 
 import winterwell.jtwitter.Twitter.Status;
 
-import jomp.runtime.OMP;
-
 import com.restfb.Connection;
-import com.restfb.DefaultFacebookClient;
-import com.restfb.FacebookClient;
 import com.restfb.types.Page;
 import com.restfb.types.Post;
 
@@ -27,8 +23,8 @@ public class Data {
 	public Data(Empresa e1) {
 		this.empresa = e1;
 	}
-	
-	
+
+
 
 	public Long getNumFacebookFans() {
 		return numFacebookFans;
@@ -83,7 +79,7 @@ public class Data {
 		this.empresa = empresa;
 	}
 
-	
+
 
 	public int getTwitterGoodPoints() {
 		return twitterGoodPoints;
@@ -106,8 +102,8 @@ public class Data {
 	public void setTwitterBadPoints(int twitterBadPoints) {
 		this.twitterBadPoints = twitterBadPoints;
 	}
-	
-	
+
+
 
 
 
@@ -139,70 +135,77 @@ public class Data {
 		int myid;
 		int good = 0;
 		int bad = 0;
-
-
-
-		//omp parallel
+		List twitterList = this.twitterList;
+		
+		//omp parallel shared(good, bad, twitterList)
 		{	
 			//omp for
-			for(int i = 0; i < this.twitterList.size(); i++) {
-				Status st = (Status) this.twitterList.get(i);
-				System.out.println(st.getText());
+			for(int i = 0; i < twitterList.size(); i++) {
+				Status st = (Status) twitterList.get(i);
 
 				if(st.getText().contains("#fail")) {
-					this.twitterBadPoints++;
+					good++;
 				}
 
 				if(st.getText().contains("#win")){
-					this.twitterGoodPoints++;
+					bad++;
 				}
 			}
 		}
+		
+		this.twitterGoodPoints = good;
+		this.twitterBadPoints = bad;
 	}
 
 	public void processarFacebook() {
-		//omp sections
+		Page facepage = this.facebookPage;
+		Connection sc = this.facebookSearch;
+		int myid;
+		int good = 0;
+		int bad = 0;
+		
+		//omp parallel shared(good, bad)
 		{
-			//omp section
+			//omp sections
 			{
-				this.numFacebookFans = this.facebookPage.getFanCount();
-				
-				if(this.numFacebookFans > 5000) {
-					this.facebookGoodPoints++;
-				} 
-				if(this.numFacebookFans < 100) {
-					this.facebookBadPoints++;
-				}
-				
-				// pagina com overview vazio leva negativo
-				if(this.facebookPage.getCompanyOverview() == "") {
-					this.facebookBadPoints--;
-				}
-				
-				//
-				//if(this.facebookPage.getFounded())
-				// calculos com base na pagina
-			}
-			
-			//omp section
-			{
-				List l = this.facebookSearch.getData();
-				Iterator it = l.iterator();
-				while(it.hasNext()) {
-					Post p = (Post) it.next();
-					
-					if(p.getMessage().contains("ruim") || p.getMessage().contains("pŽssimo") || p.getMessage().contains("pior")) {
-						this.facebookBadPoints++;
-					}
+				//omp section
+				{
+					long numFans = facepage.getFanCount();
 
-					if(p.getMessage().contains("bom") || p.getMessage().contains("—timo") || p.getMessage().contains("melhor")) {
-						this.facebookGoodPoints++;
+					if(numFans > 5000) {
+						good++;
+					} 
+					if(numFans < 100) {
+						bad++;
+					}
+					// pagina com overview vazio leva negativo
+					if(facepage.getCompanyOverview() == "") {
+						bad--;
 					}
 				}
+
+				//omp section
+				{
+					List l = sc.getData();
+					Iterator it = l.iterator();
+					while(it.hasNext()) {
+						Post p = (Post) it.next();
+
+						if(p.getMessage().contains("ruim") || p.getMessage().contains("pŽssimo") || p.getMessage().contains("pior")) {
+							bad++;
+						}
+
+						if(p.getMessage().contains("bom") || p.getMessage().contains("—timo") || p.getMessage().contains("melhor")) {
+							good++;
+						}
+					}
+				}
+
 			}
-			
 		}
-
+		
+		this.facebookGoodPoints = good;
+		this.facebookBadPoints = bad;
 	}
 
 }
