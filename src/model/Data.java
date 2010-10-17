@@ -37,19 +37,13 @@ public class Data {
 		this.numFacebookFans = numFacebookFans;
 	}
 
-
-
 	public Connection getFacebookSearch() {
 		return facebookSearch;
 	}
 
-
-
 	public void setFacebookSearch(Connection facebookSearch) {
 		this.facebookSearch = facebookSearch;
 	}
-
-
 
 	public List getTwitterList() {
 		return twitterList;
@@ -142,9 +136,9 @@ public class Data {
 {
   __omp_Class0 __omp_Object0 = new __omp_Class0();
   // shared variables
-  __omp_Object0.good = good;
-  __omp_Object0.bad = bad;
   __omp_Object0.twitterList = twitterList;
+  __omp_Object0.bad = bad;
+  __omp_Object0.good = good;
   __omp_Object0.e1 = e1;
   // firstprivate variables
   try {
@@ -155,9 +149,9 @@ public class Data {
   }
   // reduction variables
   // shared variables
-  good = __omp_Object0.good;
-  bad = __omp_Object0.bad;
   twitterList = __omp_Object0.twitterList;
+  bad = __omp_Object0.bad;
+  good = __omp_Object0.good;
   myid = __omp_Object0.myid;
   e1 = __omp_Object0.e1;
 }
@@ -179,8 +173,6 @@ public class Data {
 {
   __omp_Class4 __omp_Object4 = new __omp_Class4();
   // shared variables
-  __omp_Object4.good = good;
-  __omp_Object4.bad = bad;
   __omp_Object4.sc = sc;
   __omp_Object4.facepage = facepage;
   __omp_Object4.e1 = e1;
@@ -192,9 +184,9 @@ public class Data {
     System.err.println(__omp_exception);
   }
   // reduction variables
+  good  += __omp_Object4._rd_good;
+  bad  += __omp_Object4._rd_bad;
   // shared variables
-  good = __omp_Object4.good;
-  bad = __omp_Object4.bad;
   myid = __omp_Object4.myid;
   sc = __omp_Object4.sc;
   facepage = __omp_Object4.facepage;
@@ -210,19 +202,21 @@ public class Data {
 // OMP PARALLEL REGION INNER CLASS DEFINITION BEGINS
 private class __omp_Class4 extends jomp.runtime.BusyTask {
   // shared variables
-  int good;
-  int bad;
   int myid;
   Connection sc;
   Page facepage;
   Empresa e1;
   // firstprivate variables
   // variables to hold results of reduction
+  int _rd_good;
+  int _rd_bad;
 
   public void go(int __omp_me) throws Throwable {
   // firstprivate variables + init
   // private variables
   // reduction variables, init to default
+  int good = 0;
+  int bad = 0;
     // OMP USER CODE BEGINS
 
 		{
@@ -304,8 +298,12 @@ private class __omp_Class4 extends jomp.runtime.BusyTask {
 		}
     // OMP USER CODE ENDS
   // call reducer
+  good = (int) jomp.runtime.OMP.doPlusReduce(__omp_me, good);
+  bad = (int) jomp.runtime.OMP.doPlusReduce(__omp_me, bad);
   // output to _rd_ copy
   if (jomp.runtime.OMP.getThreadNum(__omp_me) == 0) {
+    _rd_good = good;
+    _rd_bad = bad;
   }
   }
 }
@@ -316,9 +314,9 @@ private class __omp_Class4 extends jomp.runtime.BusyTask {
 // OMP PARALLEL REGION INNER CLASS DEFINITION BEGINS
 private class __omp_Class0 extends jomp.runtime.BusyTask {
   // shared variables
-  int good;
-  int bad;
   List twitterList;
+  int bad;
+  int good;
   int myid;
   Empresa e1;
   // firstprivate variables
@@ -329,17 +327,21 @@ private class __omp_Class0 extends jomp.runtime.BusyTask {
   // private variables
   // reduction variables, init to default
     // OMP USER CODE BEGINS
-
+ 
 		{
                          { // OMP FOR BLOCK BEGINS
                          // copy of firstprivate variables, initialized
                          // copy of lastprivate variables
                          // variables to hold result of reduction
+                         int _cp_good;
+                         int _cp_bad;
                          boolean amLast=false;
                          {
                            // firstprivate variables + init
                            // [last]private variables
                            // reduction variables + init to default
+                           int  good = 0;
+                           int  bad = 0;
                            // -------------------------------------
                            jomp.runtime.LoopData __omp_WholeData2 = new jomp.runtime.LoopData();
                            jomp.runtime.LoopData __omp_ChunkData1 = new jomp.runtime.LoopData();
@@ -379,6 +381,8 @@ private class __omp_Class0 extends jomp.runtime.BusyTask {
                            } // of for(;;)
                            } // of while
                            // call reducer
+                           _cp_good = (int) jomp.runtime.OMP.doPlusReduce(__omp_me, good);
+                           _cp_bad = (int) jomp.runtime.OMP.doPlusReduce(__omp_me, bad);
                            jomp.runtime.OMP.doBarrier(__omp_me);
                            // copy lastprivate variables out
                            if (amLast) {
@@ -389,6 +393,8 @@ private class __omp_Class0 extends jomp.runtime.BusyTask {
                          }
                          // set global from reduction variables
                          if (jomp.runtime.OMP.getThreadNum(__omp_me) == 0) {
+                           good+= _cp_good;
+                           bad+= _cp_bad;
                          }
                          } // OMP FOR BLOCK ENDS
 

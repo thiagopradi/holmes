@@ -36,19 +36,13 @@ public class Data {
 		this.numFacebookFans = numFacebookFans;
 	}
 
-
-
 	public Connection getFacebookSearch() {
 		return facebookSearch;
 	}
 
-
-
 	public void setFacebookSearch(Connection facebookSearch) {
 		this.facebookSearch = facebookSearch;
 	}
-
-
 
 	public List getTwitterList() {
 		return twitterList;
@@ -137,9 +131,9 @@ public class Data {
 		int bad = 0;
 		List twitterList = this.twitterList;
 		
-		//omp parallel shared(good, bad, twitterList)
+		//omp parallel shared(twitterList) 
 		{	
-			//omp for
+			//omp for reduction(+:good,bad)
 			for(int i = 0; i < twitterList.size(); i++) {
 				Status st = (Status) twitterList.get(i);
 
@@ -164,7 +158,7 @@ public class Data {
 		int good = 0;
 		int bad = 0;
 		
-		//omp parallel shared(good, bad)
+		//omp parallel reduction(+:good,bad)
 		{
 			//omp sections
 			{
