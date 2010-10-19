@@ -133,7 +133,7 @@ public class Data {
 
 		//omp parallel shared(twitterList) 
 		{	
-			//omp for reduction(+:good,bad)
+			//omp for
 			for(int i = 0; i < twitterList.size(); i++) {
 				Status st = (Status) twitterList.get(i);
 
@@ -166,29 +166,19 @@ public class Data {
 
 		//omp parallel sections reduction(+:good,bad)
 		{
-
 			//omp section
 			{
 				long numFans = facepage.getFanCount();
 
 				if(numFans > 5000) {
-					//omp critical
-					{
-						good++;
-					}
+					good++;
 				} 
 				if(numFans < 100) {
-					//omp critical
-					{
-						bad++;
-					}
+					bad++;
 				}
 				// pagina com overview vazio leva negativo
 				if(facepage.getCompanyOverview() == "") {
-					//omp critical
-					{
-						bad--;
-					}
+					bad--;
 				}
 			}
 
@@ -200,17 +190,11 @@ public class Data {
 					Post p = (Post) it.next();
 
 					if(p.getMessage().contains("ruim") || p.getMessage().contains("pŽssimo") || p.getMessage().contains("pior")) {
-						//omp critical
-						{
-							bad++;
-						}
+						bad++;
 					}
 
 					if(p.getMessage().contains("bom") || p.getMessage().contains("—timo") || p.getMessage().contains("melhor")) {
-						//omp critical
-						{
-							good++;
-						}
+						good++;
 					}
 				}
 			}
