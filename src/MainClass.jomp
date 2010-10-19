@@ -25,7 +25,6 @@ import com.restfb.types.Post;
 
 public class MainClass {
 	public static void main(String args[]) throws FacebookException {
-		OMP.setNumThreads(2);
 		ArrayList arr = new ArrayList();
 		
 		Empresa e = new Empresa();
@@ -50,6 +49,7 @@ public class MainClass {
 		e.setOutrosNomes(a);
 
 		arr.add(e);
+
 		// o arquivo encontra-se no mesmo diretório //da aplicação
 		File file = new File("keys.properties");	
 		Properties props = new Properties();
@@ -67,9 +67,9 @@ public class MainClass {
 
 		
 		FacebookClient facebookClient = new DefaultFacebookClient(props.getProperty("facebook_key"));
-		FacebookClient publicOnlyFacebookClient = new DefaultFacebookClient();
 		Twitter twClient = new Twitter();
 		int myid;
+		OMP.setNumThreads(arr.size());
 
 		//omp parallel private(myid)
 		{

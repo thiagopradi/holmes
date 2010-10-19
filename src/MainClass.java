@@ -26,7 +26,6 @@ import com.restfb.types.Post;
 public class MainClass {
 
 	public static void main(String args[]) throws FacebookException {
-		OMP.setNumThreads(2);
 		ArrayList arr = new ArrayList();
 		
 		Empresa e = new Empresa();
@@ -51,6 +50,7 @@ public class MainClass {
 		e.setOutrosNomes(a);
 
 		arr.add(e);
+
 		// o arquivo encontra-se no mesmo diret\u00f3rio //da aplica\u00e7\u00e3o
 		File file = new File("keys.properties");	
 		Properties props = new Properties();
@@ -68,16 +68,15 @@ public class MainClass {
 
 		
 		FacebookClient facebookClient = new DefaultFacebookClient(props.getProperty("facebook_key"));
-		FacebookClient publicOnlyFacebookClient = new DefaultFacebookClient();
 		Twitter twClient = new Twitter();
 		int myid;
+		OMP.setNumThreads(arr.size());
 
 // OMP PARALLEL BLOCK BEGINS
 {
   __omp_Class0 __omp_Object0 = new __omp_Class0();
   // shared variables
   __omp_Object0.twClient = twClient;
-  __omp_Object0.publicOnlyFacebookClient = publicOnlyFacebookClient;
   __omp_Object0.facebookClient = facebookClient;
   IOException ex = null;
 __omp_Object0.ex = ex;
@@ -98,7 +97,6 @@ __omp_Object0.ex = ex;
   // reduction variables
   // shared variables
   twClient = __omp_Object0.twClient;
-  publicOnlyFacebookClient = __omp_Object0.publicOnlyFacebookClient;
   facebookClient = __omp_Object0.facebookClient;
   ex = __omp_Object0.ex;
   fis = __omp_Object0.fis;
@@ -133,7 +131,6 @@ __omp_Object0.ex = ex;
 private static class __omp_Class0 extends jomp.runtime.BusyTask {
   // shared variables
   Twitter twClient;
-  FacebookClient publicOnlyFacebookClient;
   FacebookClient facebookClient;
   IOException ex;
   FileInputStream fis;
